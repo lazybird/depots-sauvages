@@ -11,7 +11,7 @@ SECRET_KEY = env("SECRET_KEY")
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
-DATABASES = {"default": env.db("DATABASE_URL")}
 
-STATIC_ROOT = "dist/static"
-STATICFILES_DIRS = []
+DATABASES = {
+    "default": env.db("DATABASE_URL", default=f"file:///{PROJECT_ROOT / 'db.sqlite3'}"),
+}
