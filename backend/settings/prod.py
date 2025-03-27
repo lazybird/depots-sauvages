@@ -15,3 +15,5 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 DATABASES = {
     "default": env.db("DATABASE_URL", default=f"file:///{PROJECT_ROOT / 'db.sqlite3'}"),
 }
+
+DEBUG = env.bool("DEBUG", default=False)
