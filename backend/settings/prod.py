@@ -13,4 +13,5 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 DATABASES = {"default": env.db("DATABASE_URL")}
 
-STATIC_ROOT = env.str("STATIC_ROOT", default="dist/static")
+STATIC_ROOT = "dist/static"
+STATICFILES_DIRS = []
