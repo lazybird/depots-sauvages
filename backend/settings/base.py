@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     #
     # Project apps
     "backend.home",
+    "backend.signalements",
 ]
 
 MIDDLEWARE = [
