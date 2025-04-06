@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import '@/assets/styles/form-steps.css'
+import { useSignalementStore } from '@/stores/signalement'
 import { computed } from 'vue'
-import { useSignalementStore } from '../../stores/signalement'
-import { auteurOptions, natureTerrainOptions, typesDechetsList, volumeOptions } from './form-data'
+import { auteurOptions, natureTerrainOptions, typesDepotOptions, volumeOptions } from './form-data'
 
 const store = useSignalementStore()
 
@@ -23,6 +23,22 @@ const handleFileChange = (event: Event) => {
   if (target.files) {
     store.formData.photos = Array.from(target.files)
   }
+}
+
+const handleTypesDepotChange = (event: Event, value: string) => {
+  const checked = (event.target as HTMLInputElement).checked
+  const currentTypes = [...store.formData.typesDepot]
+
+  if (checked && !currentTypes.includes(value)) {
+    currentTypes.push(value)
+  } else if (!checked) {
+    const index = currentTypes.indexOf(value)
+    if (index > -1) {
+      currentTypes.splice(index, 1)
+    }
+  }
+
+  store.formData.typesDepot = currentTypes
 }
 </script>
 
@@ -100,15 +116,16 @@ const handleFileChange = (event: Event) => {
       />
 
       <div class="fr-form-group">
-        <legend class="fr-fieldset__legend fr-text--regular">🧱 Types de déchets</legend>
+        <legend class="fr-fieldset__legend fr-text--regular">Types de dépôts</legend>
         <div class="fr-fieldset__content">
-          <div v-for="option in typesDechetsList" :key="option.value" class="fr-checkbox-group">
+          <div v-for="option in typesDepotOptions" :key="option.value" class="fr-checkbox-group">
             <input
               type="checkbox"
               :id="option.id"
               :name="option.name"
               :value="option.value"
-              v-model="store.formData.typesDechets"
+              :checked="store.formData.typesDepot.includes(option.value)"
+              @change="handleTypesDepotChange($event, option.value)"
             />
             <label class="fr-label" :for="option.id">{{ option.label }}</label>
           </div>

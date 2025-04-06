@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { useSignalementStore } from '@/stores/signalement'
 import { computed, watch } from 'vue'
-import { useSignalementStore } from '../stores/signalement'
 import { getInitialFormData, STEPS } from './form-steps/form-data'
 import Step1 from './form-steps/step-1.vue'
 import Step2 from './form-steps/step-2.vue'
@@ -43,7 +43,6 @@ watch(
 .waste-report {
   margin: 0 auto 2rem;
   padding: 0 1rem;
-  max-width: 1000px;
 }
 
 .form-wrapper {

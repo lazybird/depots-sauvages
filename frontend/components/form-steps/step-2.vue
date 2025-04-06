@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import '@/assets/styles/form-steps.css'
+import { useSignalementStore } from '@/stores/signalement'
 import { computed } from 'vue'
-import { useSignalementStore } from '../../stores/signalement'
 import { indicesDisponiblesOptions, yesNoOptions } from './form-data'
 
 const store = useSignalementStore()
