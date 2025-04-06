@@ -1,44 +1,28 @@
 <script setup lang="ts">
 import '@/assets/styles/form-steps.css'
-import { computed, ref } from 'vue'
-import {
-  auteurOptions,
-  getInitialFormData,
-  natureTerrainOptions,
-  typesDechetsList,
-  volumeOptions,
-} from './form-data'
-import { useSignalementStore } from '@/stores/signalement'
-
-const props = defineProps({
-  onValidStep: {
-    type: Function,
-    required: true,
-  },
-})
+import { computed } from 'vue'
+import { useSignalementStore } from '../../stores/signalement'
+import { auteurOptions, natureTerrainOptions, typesDechetsList, volumeOptions } from './form-data'
 
 const store = useSignalementStore()
 
-const formData = ref(getInitialFormData())
-
-// Add hasPhotos field
-formData.value.hasPhotos = 'non'
-
-const showPhotoUpload = computed(() => formData.value.hasPhotos === 'oui')
+const showPhotoUpload = computed(() => store.formData.hasPhotos === 'oui')
 
 const yesNoOptions = [
   { label: 'Oui', value: 'oui' },
   { label: 'Non', value: 'non' },
 ]
 
-const handleSubmit = () => {
-  if (store.isStep1Valid) {
-    store.updateStep(2)
-  }
+const handleSubmit = (event: Event) => {
+  event.preventDefault()
+  store.updateStep(2)
 }
 
-const handleFileChange = (event) => {
-  formData.value.photos = Array.from(event.target.files)
+const handleFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (target.files) {
+    store.formData.photos = Array.from(target.files)
+  }
 }
 </script>
 
@@ -131,10 +115,11 @@ const handleFileChange = (event) => {
         </div>
       </div>
 
-      <DsfrTextarea
+      <DsfrInput
         v-model="store.formData.precisionsDechets"
         label="✏️ Précisions sur les déchets"
         hint="N'inscrivez AUCUNE DONNÉE personnelle"
+        :isTextarea="true"
       />
 
       <div class="form-actions">

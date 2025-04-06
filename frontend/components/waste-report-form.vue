@@ -1,73 +1,49 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
+import { useSignalementStore } from '../stores/signalement'
 import { getInitialFormData, STEPS } from './form-steps/form-data'
 import Step1 from './form-steps/step-1.vue'
 import Step2 from './form-steps/step-2.vue'
 import Step3 from './form-steps/step-3.vue'
 
-// State
-const currentStep = ref(1)
-const formData = ref(getInitialFormData())
-
-// Computed
-const isFirstStep = computed(() => currentStep.value === 1)
-const isLastStep = computed(() => currentStep.value === STEPS.length)
-const currentStepTitle = computed(() => STEPS[currentStep.value - 1])
-const isConfirmationStep = computed(() => currentStep.value === STEPS.length)
-
-// Methods
-const goToNextStep = () => !isLastStep.value && currentStep.value++
-const goToPreviousStep = () => !isFirstStep.value && currentStep.value--
-
-const handleStepValidation = (stepData) => {
-  formData.value = {
-    ...formData.value,
-    ...stepData,
-  }
-  goToNextStep()
-}
+const store = useSignalementStore()
+const isLastStep = computed(() => store.currentStep === STEPS.length)
 
 const resetForm = () => {
-  currentStep.value = 1
-  formData.value = getInitialFormData()
+  store.updateStep(1)
+  store.formData = getInitialFormData()
 }
 
 const emit = defineEmits(['stepChange'])
-
-watch(currentStep, (newStep) => {
-  emit('stepChange', newStep)
-})
+watch(
+  () => store.currentStep,
+  (newStep) => emit('stepChange', newStep)
+)
 </script>
 
 <template>
   <div class="waste-report">
-    <div class="form-header">
-      <DsfrStepper :steps="STEPS" :current-step="currentStep" />
-    </div>
+    <DsfrStepper
+      :title="'Signalement d\'un dépôt sauvage'"
+      :steps="STEPS"
+      :current-step="store.currentStep"
+    />
 
-    <div v-if="!isLastStep" class="form-wrapper">
+    <div class="form-wrapper" :class="{ 'confirmation-step': isLastStep }">
       <div class="form-content">
-        <Step1 v-if="currentStep === 1" :on-valid-step="handleStepValidation" />
-        <Step2
-          v-if="currentStep === 2"
-          :on-valid-step="handleStepValidation"
-          @previous="goToPreviousStep"
-        />
-        <Step3 v-if="currentStep === 3" @restart="resetForm" />
+        <Step1 v-if="store.currentStep === 1" />
+        <Step2 v-if="store.currentStep === 2" />
+        <Step3 v-if="store.currentStep === 3" @restart="resetForm" />
       </div>
-    </div>
-
-    <!-- Confirmation step -->
-    <div v-else class="form-wrapper confirmation-step">
-      <Step3 @restart="resetForm" />
     </div>
   </div>
 </template>
 
 <style scoped>
 .waste-report {
-  margin-bottom: 2rem;
+  margin: 0 auto 2rem;
   padding: 0 1rem;
+  max-width: 1000px;
 }
 
 .form-wrapper {
@@ -93,12 +69,6 @@ watch(currentStep, (newStep) => {
 
 @media (min-width: 768px) {
   .waste-report {
-    padding: 0;
-    margin: 0 auto;
-    max-width: 1000px;
-  }
-
-  .form-wrapper {
     padding: 0;
   }
 }

@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
 
 interface SignalementForm {
-  // Step 1 - Location and Basic Info
+  // Step 1
   commune: string
   adresseDepot: string
   date: string
@@ -15,98 +14,57 @@ interface SignalementForm {
   hasPhotos: 'oui' | 'non'
   photos: File[]
 
-  // Step 2 - Investigation Details
+  // Step 2
   auteurIdentifie: boolean
   souhaitePorterPlainte: boolean
   indicesDisponibles: string[]
+  commentairesSupplementaires: string
+  arreteMunicipalExiste: 'oui' | 'non'
+  connaissezVousMontantPrejudice: 'oui' | 'non'
+  montantPrejudice: number
+  nombrePersonnesMobilisees: number
+  dureeInterventionHeures: number
+  nombreVehicules: number
+  kilometrage: number
+  autresCouts: number
 }
 
-// Simple type for our form data
-type FormData = {
-  commune: string
-  adresseDepot: string
-  date: string
-  heure: string
-  // ... other fields
-}
-
-export const useSignalementStore = defineStore('signalement', () => {
-  // State
-  const formData = ref<FormData>({
-    commune: '',
-    adresseDepot: '',
-    date: '',
-    heure: '',
-    auteurSignalement: '',
-    natureTerrain: '',
-    volumeDechets: '',
-    typesDechets: [],
-    precisionsDechets: '',
-    hasPhotos: 'non',
-    photos: [],
-    auteurIdentifie: false,
-    souhaitePorterPlainte: false,
-    indicesDisponibles: [],
-  })
-
-  const currentStep = ref(1)
-
-  // Actions
-  function updateStep(step: number) {
-    currentStep.value = step
-  }
-
-  function updateFormData(data: Partial<FormData>) {
-    formData.value = { ...formData.value, ...data }
-  }
-
-  function resetForm() {
-    formData.value = {
+export const useSignalementStore = defineStore('signalement', {
+  state: () => ({
+    currentStep: 1,
+    formData: {
+      // Step 1
       commune: '',
       adresseDepot: '',
+      auteurSignalement: '',
       date: '',
       heure: '',
-      auteurSignalement: '',
+      hasPhotos: 'non',
+      photos: [],
       natureTerrain: '',
       volumeDechets: '',
       typesDechets: [],
       precisionsDechets: '',
-      hasPhotos: 'non',
-      photos: [],
+
+      // Step 2
       auteurIdentifie: false,
       souhaitePorterPlainte: false,
       indicesDisponibles: [],
-    }
-    currentStep.value = 1
-  }
+      commentairesSupplementaires: '',
+      arreteMunicipalExiste: 'non',
+      connaissezVousMontantPrejudice: 'non',
+      montantPrejudice: 0,
+      nombrePersonnesMobilisees: 0,
+      dureeInterventionHeures: 0,
+      nombreVehicules: 0,
+      kilometrage: 0,
+      autresCouts: 0,
+    } as SignalementForm,
+  }),
 
-  // Getters
-  const isStep1Valid = computed(() => {
-    return (
-      formData.value.commune &&
-      formData.value.adresseDepot &&
-      formData.value.date &&
-      formData.value.heure
-    )
-  })
-
-  const isStep2Valid = computed(() => {
-    // Add validation logic for step 2
-    return true
-  })
-
-  return {
-    // State
-    formData,
-    currentStep,
-
-    // Actions
-    updateStep,
-    updateFormData,
-    resetForm,
-
-    // Getters
-    isStep1Valid,
-    isStep2Valid,
-  }
+  actions: {
+    updateStep(step: number) {
+      this.currentStep = step
+    },
+  },
 })
