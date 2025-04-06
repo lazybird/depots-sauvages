@@ -8,6 +8,7 @@ import {
   typesDechetsList,
   volumeOptions,
 } from './form-data'
+import { useSignalementStore } from '@/stores/signalement'
 
 const props = defineProps({
   onValidStep: {
@@ -15,6 +16,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const store = useSignalementStore()
 
 const formData = ref(getInitialFormData())
 
@@ -29,7 +32,9 @@ const yesNoOptions = [
 ]
 
 const handleSubmit = () => {
-  props.onValidStep(formData.value)
+  if (store.isStep1Valid) {
+    store.updateStep(2)
+  }
 }
 
 const handleFileChange = (event) => {
@@ -42,32 +47,42 @@ const handleFileChange = (event) => {
   <div class="form-container">
     <form @submit.prevent="handleSubmit">
       <DsfrInput
-        v-model="formData.commune"
+        v-model="store.formData.commune"
         label="📍 Sur quelle commune a eu lieu le dépôt ?"
         required
       />
 
       <DsfrInput
-        v-model="formData.adresseDepot"
+        v-model="store.formData.adresseDepot"
         label="🏠 Quelle est l'adresse du dépôt de déchets ?"
         required
       />
 
       <DsfrSelect
-        v-model="formData.auteurSignalement"
+        v-model="store.formData.auteurSignalement"
         label="👮 Qui a réalisé la constatation ?"
         :options="auteurOptions"
         required
       />
 
       <div class="date-time">
-        <DsfrInput v-model="formData.date" type="date" label="🗓️ Date de constatation" required />
-        <DsfrInput v-model="formData.heure" type="time" label="⏰ Heure de constatation" required />
+        <DsfrInput
+          v-model="store.formData.date"
+          type="date"
+          label="🗓️ Date de constatation"
+          required
+        />
+        <DsfrInput
+          v-model="store.formData.heure"
+          type="time"
+          label="⏰ Heure de constatation"
+          required
+        />
       </div>
 
       <div class="photo-section">
         <DsfrRadioButtonSet
-          v-model="formData.hasPhotos"
+          v-model="store.formData.hasPhotos"
           name="has-photos"
           legend="📷 Avez-vous des photos du dépôt ?"
           :options="yesNoOptions"
@@ -76,7 +91,7 @@ const handleFileChange = (event) => {
 
         <DsfrFileUpload
           v-if="showPhotoUpload"
-          v-model="formData.photos"
+          v-model="store.formData.photos"
           label="Ajouter vos photos"
           hint="Formats acceptés : .jpg, .jpeg, .png, .pdf"
           accept=".jpg,.jpeg,.png,.pdf"
@@ -86,7 +101,7 @@ const handleFileChange = (event) => {
       </div>
 
       <DsfrRadioButtonSet
-        v-model="formData.natureTerrain"
+        v-model="store.formData.natureTerrain"
         name="nature-terrain"
         legend="🌍 Nature du terrain"
         :options="natureTerrainOptions"
@@ -94,7 +109,7 @@ const handleFileChange = (event) => {
       />
 
       <DsfrSelect
-        v-model="formData.volumeDechets"
+        v-model="store.formData.volumeDechets"
         label="📏 Volume estimé"
         :options="volumeOptions"
         required
@@ -109,7 +124,7 @@ const handleFileChange = (event) => {
               :id="option.id"
               :name="option.name"
               :value="option.value"
-              v-model="formData.typesDechets"
+              v-model="store.formData.typesDechets"
             />
             <label class="fr-label" :for="option.id">{{ option.label }}</label>
           </div>
@@ -117,7 +132,7 @@ const handleFileChange = (event) => {
       </div>
 
       <DsfrTextarea
-        v-model="formData.precisionsDechets"
+        v-model="store.formData.precisionsDechets"
         label="✏️ Précisions sur les déchets"
         hint="N'inscrivez AUCUNE DONNÉE personnelle"
       />
