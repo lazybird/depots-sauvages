@@ -87,9 +87,10 @@ const handleTypesDepotChange = (event: Event, value: string) => {
 
       <div class="photo-section">
         <DsfrRadioButtonSet
-          v-model="store.formData.hasPhotos"
-          name="has-photos"
-          legend="📷 Avez-vous des photos du dépôt ?"
+          :model-value="store.formData.photoDispo ? 'oui' : 'non'"
+          @update:model-value="store.updateBooleanField('photoDispo', $event)"
+          name="photo-dispo"
+          legend="Avez-vous des photos du dépôt ?"
           :options="yesNoOptions"
           required
         />

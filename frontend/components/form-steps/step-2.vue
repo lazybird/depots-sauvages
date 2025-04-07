@@ -1,15 +1,9 @@
 <script setup lang="ts">
 import '@/assets/styles/form-steps.css'
 import { useSignalementStore } from '@/stores/signalement'
-import { computed } from 'vue'
 import { indicesDisponiblesOptions, yesNoOptions } from './form-data'
 
 const store = useSignalementStore()
-
-const showPrejudiceAmount = computed(() => store.formData.connaissezVousMontantPrejudice === 'oui')
-const showPrejudiceEstimation = computed(
-  () => store.formData.connaissezVousMontantPrejudice === 'non'
-)
 
 const handleSubmit = async (event: Event) => {
   event.preventDefault()
@@ -28,7 +22,8 @@ const handlePrevious = () => store.updateStep(1)
   <div class="form-container">
     <form @submit.prevent="handleSubmit">
       <DsfrRadioButtonSet
-        v-model="store.formData.auteurIdentifie"
+        :model-value="store.formData.auteurIdentifie ? 'oui' : 'non'"
+        @update:model-value="store.updateBooleanField('auteurIdentifie', $event)"
         name="auteur-identifie"
         legend="L'auteur des faits est-il identifié ?"
         :options="yesNoOptions"
@@ -36,9 +31,10 @@ const handlePrevious = () => store.updateStep(1)
       />
 
       <DsfrRadioButtonSet
-        v-model="store.formData.souhaitePorterPlainte"
+        :model-value="store.formData.souhaitePorterPlainte ? 'oui' : 'non'"
+        @update:model-value="store.updateBooleanField('souhaitePorterPlainte', $event)"
         name="souhaite-porter-plainte"
-        legend="Souhaitez-vous déposer plainte ?"
+        legend="Souhaitez-vous porter plainte ?"
         :options="yesNoOptions"
         required
       />
@@ -83,58 +79,52 @@ const handlePrevious = () => store.updateStep(1)
       />
 
       <DsfrRadioButtonSet
-        v-model="store.formData.connaissezVousMontantPrejudice"
-        name="connait-montant"
-        legend="Connaissez-vous le montant du préjudice subi ?"
+        :model-value="store.formData.prejudiceMontantConnu ? 'oui' : 'non'"
+        @update:model-value="store.updateBooleanField('prejudiceMontantConnu', $event)"
+        name="prejudice-montant-connu"
+        legend="Connaissez-vous le montant du préjudice ?"
         :options="yesNoOptions"
         required
       />
 
-      <template v-if="showPrejudiceAmount">
+      <template v-if="store.formData.prejudiceMontantConnu">
         <DsfrInput
-          v-model="store.formData.montantPrejudice"
+          v-model="store.formData.prejudiceMontant"
           type="number"
-          label="Quel est le montant du préjudice ?"
-          hint="En euros (€)"
+          label="Montant du préjudice"
           required
         />
       </template>
 
-      <template v-if="showPrejudiceEstimation">
-        <p class="fr-hint-text">Répondez à ces 5 questions pour pouvoir l'estimer :</p>
-        <DsfrInput
-          v-model="store.formData.nombrePersonnesMobilisees"
-          type="number"
-          label="Combien de personnes doivent être mobilisées ?"
-          hint="Élus et/ou agents"
-          required
-        />
-        <DsfrInput
-          v-model="store.formData.dureeInterventionHeures"
-          type="number"
-          label="Pendant combien d'heures ?"
-          hint="Durée totale de l'intervention"
-          required
-        />
-        <DsfrInput
-          v-model="store.formData.nombreVehicules"
-          type="number"
-          label="Combien de véhicules doivent être mobilisés ?"
-          required
-        />
-        <DsfrInput
-          v-model="store.formData.kilometrage"
-          type="number"
-          label="Combien de kilomètres doivent être parcourus ?"
-          hint="Distance totale aller-retour"
-          required
-        />
-        <DsfrInput
-          v-model="store.formData.autresCouts"
-          type="number"
-          label="Indiquer ici le montant d'autres coûts éventuels"
-          hint="Prestation service externes, surcout en déchetterie, etc. (en €)"
-        />
+      <template v-else>
+        <fieldset class="fr-fieldset">
+          <legend class="fr-fieldset__legend">Estimation du préjudice</legend>
+          <DsfrInput
+            v-model="store.formData.prejudiceNombrePersonnes"
+            type="number"
+            label="Nombre de personnes mobilisées"
+          />
+          <DsfrInput
+            v-model="store.formData.prejudiceNombreHeures"
+            type="number"
+            label="Nombre d'heures"
+          />
+          <DsfrInput
+            v-model="store.formData.prejudiceNombreVehicules"
+            type="number"
+            label="Nombre de véhicules"
+          />
+          <DsfrInput
+            v-model="store.formData.prejudiceKilometrage"
+            type="number"
+            label="Kilométrage"
+          />
+          <DsfrInput
+            v-model="store.formData.prejudiceAutresCouts"
+            type="number"
+            label="Autres coûts"
+          />
+        </fieldset>
       </template>
 
       <div class="form-actions">

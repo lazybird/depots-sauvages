@@ -25,8 +25,8 @@ export const useSignalementStore = defineStore('signalement', {
       souhaitePorterPlainte: false,
       indicesDisponibles: [],
       precisionsIndices: '',
-      arreteMunicipalExiste: 'non',
-      prejudiceMontantConnu: 'non',
+      arreteMunicipalExiste: false,
+      prejudiceMontantConnu: false,
       prejudiceMontant: 0,
       prejudiceNombrePersonnes: 0,
       prejudiceNombreHeures: 0,
@@ -39,6 +39,12 @@ export const useSignalementStore = defineStore('signalement', {
   actions: {
     updateStep(step: number) {
       this.currentStep = step
+    },
+
+    updateBooleanField(field: keyof SignalementFormData, value: string) {
+      if (typeof this.formData[field] === 'boolean') {
+        this.formData[field] = value === ('oui' as never)
+      }
     },
 
     async saveFormData() {

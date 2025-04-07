@@ -47,8 +47,8 @@ export interface SignalementFormData {
   souhaitePorterPlainte: boolean
   indicesDisponibles: string[]
   precisionsIndices: string
-  arreteMunicipalExiste: 'oui' | 'non'
-  prejudiceMontantConnu: 'oui' | 'non'
+  arreteMunicipalExiste: boolean
+  prejudiceMontantConnu: boolean
   prejudiceMontant: number
   prejudiceNombrePersonnes: number
   prejudiceNombreHeures: number
@@ -74,8 +74,8 @@ export const toApiFormat = (formData: SignalementFormData): SignalementData => (
   souhaite_porter_plainte: formData.souhaitePorterPlainte,
   indices_disponibles: formData.indicesDisponibles,
   precisions_indices: formData.precisionsIndices,
-  arrete_municipal_existe: formData.arreteMunicipalExiste === 'oui',
-  prejudice_montant_connu: formData.prejudiceMontantConnu === 'oui',
+  arrete_municipal_existe: formData.arreteMunicipalExiste,
+  prejudice_montant_connu: formData.prejudiceMontantConnu,
   prejudice_montant: formData.prejudiceMontant,
   prejudice_nombre_personnes: formData.prejudiceNombrePersonnes,
   prejudice_nombre_heures: formData.prejudiceNombreHeures,
