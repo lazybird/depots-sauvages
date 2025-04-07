@@ -15,18 +15,18 @@ export const useSignalementStore = defineStore('signalement', {
       auteurSignalement: '',
       natureTerrain: '',
       volumeDepot: '',
-      typesDepot: [] as string[],
+      typesDepot: [],
       precisionsDepot: '',
       photoDispo: false,
-      photos: [] as File[],
+      photos: [],
 
       // Step 2
       auteurIdentifie: false,
       souhaitePorterPlainte: false,
-      indicesDisponibles: [] as string[],
+      indicesDisponibles: [],
       precisionsIndices: '',
-      arreteMunicipalExiste: 'non' as 'oui' | 'non',
-      prejudiceMontantConnu: 'non' as 'oui' | 'non',
+      arreteMunicipalExiste: 'non',
+      prejudiceMontantConnu: 'non',
       prejudiceMontant: 0,
       prejudiceNombrePersonnes: 0,
       prejudiceNombreHeures: 0,
@@ -42,13 +42,8 @@ export const useSignalementStore = defineStore('signalement', {
     },
 
     async saveFormData() {
-      try {
-        const data = await createResource(API_URLS.signalements, toApiFormat(this.formData))
-        return data
-      } catch (error) {
-        console.error('Error saving form data:', error)
-        throw error
-      }
+      const data = await createResource(API_URLS.signalements, toApiFormat(this.formData))
+      return data
     },
   },
 })

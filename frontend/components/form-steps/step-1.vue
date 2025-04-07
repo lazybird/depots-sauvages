@@ -72,15 +72,15 @@ const handleTypesDepotChange = (event: Event, value: string) => {
 
       <div class="date-time">
         <DsfrInput
-          v-model="store.formData.date"
+          v-model="store.formData.dateConstat"
           type="date"
-          label="🗓️ Date de constatation"
+          label="Date du constat"
           required
         />
         <DsfrInput
-          v-model="store.formData.heure"
+          v-model="store.formData.heureConstat"
           type="time"
-          label="⏰ Heure de constatation"
+          label="Heure du constat"
           required
         />
       </div>

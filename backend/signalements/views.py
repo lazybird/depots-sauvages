@@ -1,5 +1,3 @@
-"""Views for signalements app."""
-
 from rest_framework import viewsets
 
 from backend.signalements.models import Signalement
