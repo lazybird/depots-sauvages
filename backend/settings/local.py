@@ -22,3 +22,7 @@ DATABASES = {
 }
 
 ALLOWED_HOSTS = ["*"]
+
+# CORS Settings for development
+CORS_ALLOW_ALL_ORIGINS = True  # Only in development!
+CORS_ALLOW_CREDENTIALS = True

@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     # Third party apps
     "django_extensions",
     "rest_framework",
+    "corsheaders",
     #
     # Project apps
     "backend.home",
@@ -25,6 +26,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
