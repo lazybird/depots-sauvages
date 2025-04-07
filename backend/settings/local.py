@@ -5,6 +5,8 @@ from backend.settings.base import *  # noqa
 env = environ.Env()
 environ.Env.read_env(PROJECT_ROOT / ".env")
 
+DJANGO_SETTINGS_MODULE = "backend.settings.local"
+
 ENV_NAME = "dev"
 
 SECRET_KEY = env.str("SECRET_KEY", default="ignore-this-BLKAeaEaZ3KS2RDYPHAcciBBSyRGDR8=")
