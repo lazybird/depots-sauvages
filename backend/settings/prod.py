@@ -7,6 +7,9 @@ env = environ.Env()
 
 ENV_NAME = env("ENV_NAME")
 
+DJANGO_SETTINGS_MODULE = env("DJANGO_SETTINGS_MODULE", default="backend.settings.prod")
+
+
 SECRET_KEY = env("SECRET_KEY")
 
 DEBUG = env.bool("DEBUG", default=False)
