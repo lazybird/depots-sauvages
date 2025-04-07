@@ -22,9 +22,12 @@ const getCSRFToken = (): string => {
   return ''
 }
 
-export async function createResource(url: string, data: any) {
-  const response = await fetch(url, {
-    method: 'POST',
+export async function createOrUpdateResource(url: string, data: any, id?: number) {
+  const method = id ? 'PUT' : 'POST'
+  const finalUrl = id ? `${url}${id}/` : url
+
+  const response = await fetch(finalUrl, {
+    method,
     headers: {
       'Content-Type': 'application/json',
       'X-CSRFToken': getCSRFToken() || '',
