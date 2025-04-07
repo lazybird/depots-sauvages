@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { API_URLS, createOrUpdateResource } from '../services/api'
-import type { SignalementFormData } from '../types/signalement'
+import { API_URLS, createResource } from '../services/api'
+import type { Signalement } from '../types/signalement'
 import { fromApiFormat, toApiFormat } from '../types/signalement'
 
 export const useSignalementStore = defineStore('signalement', {
@@ -19,7 +19,6 @@ export const useSignalementStore = defineStore('signalement', {
       typesDepot: [],
       precisionsDepot: '',
       photoDispo: false,
-      photos: [],
 
       // Step 2
       auteurIdentifie: false,
@@ -34,7 +33,8 @@ export const useSignalementStore = defineStore('signalement', {
       prejudiceNombreVehicules: 0,
       prejudiceKilometrage: 0,
       prejudiceAutresCouts: 0,
-    } as SignalementFormData,
+      generate_doc: false,
+    } as Signalement,
   }),
 
   actions: {
@@ -42,26 +42,20 @@ export const useSignalementStore = defineStore('signalement', {
       this.currentStep = step
     },
 
-    updateBooleanField(field: keyof SignalementFormData, value: string) {
+    updateBooleanField(field: keyof Signalement, value: string) {
       if (typeof this.formData[field] === 'boolean') {
         this.formData[field] = value === ('oui' as never)
       }
     },
 
     async saveFormData() {
-      const data = await createOrUpdateResource(
-        API_URLS.signalements,
-        toApiFormat(this.formData),
-        this.currentId
-      )
-      // Store the ID from the response if it's a new entry
-      if (!this.currentId) {
-        this.currentId = data.id
+      if (this.currentStep === 2) {
+        this.formData.generate_doc = true
       }
+      const data = await createResource(API_URLS.signalements, toApiFormat(this.formData))
       return data
     },
 
-    // Add method to load existing data
     async loadSignalement(id: number) {
       try {
         const response = await fetch(`${API_URLS.signalements}${id}/`, {
@@ -70,7 +64,6 @@ export const useSignalementStore = defineStore('signalement', {
         if (!response.ok) throw new Error('Failed to load signalement')
         const data = await response.json()
         this.currentId = id
-        // Transform API data back to form format
         this.formData = fromApiFormat(data)
       } catch (error) {
         console.error('Error loading signalement:', error)
@@ -80,5 +73,4 @@ export const useSignalementStore = defineStore('signalement', {
   },
 })
 
-// Export store type
 export type SignalementStore = ReturnType<typeof useSignalementStore>

@@ -24,6 +24,7 @@ class SignalementAdmin(admin.ModelAdmin):
         "souhaite_porter_plainte",
         "arrete_municipal_existe",
         "prejudice_montant_connu",
+        "generate_doc",
     ]
 
     search_fields = [

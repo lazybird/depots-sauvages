@@ -28,6 +28,7 @@ export interface Signalement {
   prejudiceNombreVehicules: number
   prejudiceKilometrage: number
   prejudiceAutresCouts: number
+  generate_doc: boolean
 }
 
 // Simple conversion functions using libraries

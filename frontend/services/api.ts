@@ -1,4 +1,4 @@
-const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 // Helper to get CSRF token
 const getCSRFToken = (): string => {
@@ -22,12 +22,13 @@ const getCSRFToken = (): string => {
   return ''
 }
 
-export async function createOrUpdateResource(url: string, data: any, id?: number) {
-  const method = id ? 'PUT' : 'POST'
-  const finalUrl = id ? `${url}${id}/` : url
+export const API_URLS = {
+  signalements: `${API_BASE_URL}/api/signalements/`,
+}
 
-  const response = await fetch(finalUrl, {
-    method,
+export async function createResource(url: string, data: any) {
+  const response = await fetch(url, {
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-CSRFToken': getCSRFToken() || '',
@@ -42,8 +43,4 @@ export async function createOrUpdateResource(url: string, data: any, id?: number
   }
 
   return response.json()
-}
-
-export const API_URLS = {
-  signalements: `${DEFAULT_API_URL}/api/signalements/`,
 }

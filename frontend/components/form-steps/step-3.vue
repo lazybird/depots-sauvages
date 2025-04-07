@@ -1,5 +1,7 @@
-<script setup>
-defineEmits(['restart'])
+<script setup lang="ts">
+import { useSignalementStore } from '@/stores/signalement'
+
+const store = useSignalementStore()
 </script>
 
 <template>
@@ -62,14 +64,6 @@ defineEmits(['restart'])
           >
         </p>
       </section>
-
-      <DsfrButton
-        type="button"
-        label="Faire un nouveau signalement"
-        icon="fr-icon-arrow-right-line"
-        icon-right
-        @click="$emit('restart')"
-      />
     </div>
   </div>
 </template>
