@@ -11,9 +11,14 @@ const showPrejudiceEstimation = computed(
   () => store.formData.connaissezVousMontantPrejudice === 'non'
 )
 
-const handleSubmit = (event: Event) => {
+const handleSubmit = async (event: Event) => {
   event.preventDefault()
-  store.updateStep(3)
+  try {
+    await store.saveFormData()
+    store.updateStep(3)
+  } catch (error) {
+    console.error('Failed to save:', error)
+  }
 }
 
 const handlePrevious = () => store.updateStep(1)

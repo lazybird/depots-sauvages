@@ -13,9 +13,14 @@ const yesNoOptions = [
   { label: 'Non', value: 'non' },
 ]
 
-const handleSubmit = (event: Event) => {
+const handleSubmit = async (event: Event) => {
   event.preventDefault()
-  store.updateStep(2)
+  try {
+    await store.saveFormData()
+    store.updateStep(2)
+  } catch (error) {
+    console.error('Failed to save:', error)
+  }
 }
 
 const handleFileChange = (event: Event) => {
@@ -27,7 +32,7 @@ const handleFileChange = (event: Event) => {
 
 const handleTypesDepotChange = (event: Event, value: string) => {
   const checked = (event.target as HTMLInputElement).checked
-  const currentTypes = [...store.formData.typesDepot]
+  const currentTypes = [...(store.formData.typesDepot || [])]
 
   if (checked && !currentTypes.includes(value)) {
     currentTypes.push(value)
@@ -124,7 +129,7 @@ const handleTypesDepotChange = (event: Event, value: string) => {
               :id="option.id"
               :name="option.name"
               :value="option.value"
-              :checked="store.formData.typesDepot.includes(option.value)"
+              :checked="store.formData.typesDepot?.includes(option.value) ?? false"
               @change="handleTypesDepotChange($event, option.value)"
             />
             <label class="fr-label" :for="option.id">{{ option.label }}</label>
