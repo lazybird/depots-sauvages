@@ -1,32 +1,29 @@
 <script setup lang="ts">
 import '@/assets/styles/form-steps.css'
-import { computed, ref } from 'vue'
-import { getInitialFormData, indicesDisponiblesOptions, yesNoOptions } from './form-data'
+import { useSignalementStore } from '@/stores/signalement'
+import { indicesDisponiblesOptions, yesNoOptions } from './form-data'
 
-const props = defineProps({
-  onValidStep: {
-    type: Function,
-    required: true,
-  },
-})
+const store = useSignalementStore()
 
-const formData = ref(getInitialFormData())
-
-const showPrejudiceAmount = computed(() => formData.value.connaissezVousMontantPrejudice === 'oui')
-const showPrejudiceEstimation = computed(
-  () => formData.value.connaissezVousMontantPrejudice === 'non'
-)
-
-const handleSubmit = () => {
-  props.onValidStep(formData.value)
+const handleSubmit = async (event: Event) => {
+  event.preventDefault()
+  try {
+    await store.saveFormData()
+    store.updateStep(3)
+  } catch (error) {
+    console.error('Failed to save:', error)
+  }
 }
+
+const handlePrevious = () => store.updateStep(1)
 </script>
 
 <template>
   <div class="form-container">
     <form @submit.prevent="handleSubmit">
       <DsfrRadioButtonSet
-        v-model="formData.auteurIdentifie"
+        :model-value="store.formData.auteurIdentifie ? 'oui' : 'non'"
+        @update:model-value="store.updateBooleanField('auteurIdentifie', $event)"
         name="auteur-identifie"
         legend="L'auteur des faits est-il identifié ?"
         :options="yesNoOptions"
@@ -34,9 +31,10 @@ const handleSubmit = () => {
       />
 
       <DsfrRadioButtonSet
-        v-model="formData.souhaitePorterPlainte"
+        :model-value="store.formData.souhaitePorterPlainte ? 'oui' : 'non'"
+        @update:model-value="store.updateBooleanField('souhaitePorterPlainte', $event)"
         name="souhaite-porter-plainte"
-        legend="Souhaitez-vous déposer plainte ?"
+        legend="Souhaitez-vous porter plainte ?"
         :options="yesNoOptions"
         required
       />
@@ -56,7 +54,7 @@ const handleSubmit = () => {
               :id="option.id"
               :name="option.name"
               :value="option.value"
-              v-model="formData.indicesDisponibles"
+              v-model="store.formData.indicesDisponibles"
             />
             <label class="fr-label" :for="option.id">{{ option.label }}</label>
           </div>
@@ -64,16 +62,16 @@ const handleSubmit = () => {
       </div>
 
       <DsfrInput
-        v-model="formData.commentairesSupplementaires"
+        v-model="store.formData.commentairesSupplementaires"
         label="Avez vous d'autres éléments à ajouter"
         hint="N'inscrivez AUCUNE donnée personnelle"
-        isTextarea="true"
+        :isTextarea="true"
       />
 
       <hr />
 
       <DsfrRadioButtonSet
-        v-model="formData.arreteMunicipalExiste"
+        v-model="store.formData.arreteMunicipalExiste"
         name="arrete-municipal"
         legend="Disposez-vous d'un arrêté ou d'une délibération municipale encadrant ce type d'infraction et fixant le montant d'un forfait d'enlévement ?"
         :options="yesNoOptions"
@@ -81,60 +79,52 @@ const handleSubmit = () => {
       />
 
       <DsfrRadioButtonSet
-        v-model="formData.connaissezVousMontantPrejudice"
-        name="connait-montant"
-        legend="Connaissez-vous le montant du préjudice subi ?"
+        :model-value="store.formData.prejudiceMontantConnu ? 'oui' : 'non'"
+        @update:model-value="store.updateBooleanField('prejudiceMontantConnu', $event)"
+        name="prejudice-montant-connu"
+        legend="Connaissez-vous le montant du préjudice ?"
         :options="yesNoOptions"
         required
       />
 
-      <!-- Add the amount field when "Oui" is selected -->
-      <DsfrInput
-        v-if="showPrejudiceAmount"
-        v-model="formData.montantPrejudice"
-        type="number"
-        label="Quel est le montant du préjudice ?"
-        required
-      />
-
-      <!-- Add estimation fields when "Non" is selected -->
-      <template v-if="showPrejudiceEstimation">
-        <p class="fr-hint-text">Répondez à ces 5 questions pour pouvoir l'estimer :</p>
+      <template v-if="store.formData.prejudiceMontantConnu">
         <DsfrInput
-          v-model="formData.nombrePersonnesMobilisees"
+          v-model="store.formData.prejudiceMontant"
           type="number"
-          label="Combien de personnes doivent être mobilisées ?"
-          hint="Élus et/ou agents"
+          label="Montant du préjudice"
           required
         />
+      </template>
 
-        <DsfrInput
-          v-model="formData.dureeInterventionHeures"
-          type="number"
-          label="Pendant combien d'heures ?"
-          required
-        />
-
-        <DsfrInput
-          v-model="formData.nombreVehicules"
-          type="number"
-          label="Combien de véhicules doivent être mobilisés ?"
-          required
-        />
-
-        <DsfrInput
-          v-model="formData.kilometrage"
-          type="number"
-          label="Combien de kilomètres doivent être parcourus ?"
-          required
-        />
-
-        <DsfrInput
-          v-model="formData.autresCouts"
-          type="number"
-          label="Indiquer ici le montant d'autres coûts éventuels (en €)"
-          hint="Prestation service externes, surcout en déchetterie, etc."
-        />
+      <template v-else>
+        <fieldset class="fr-fieldset">
+          <legend class="fr-fieldset__legend">Estimation du préjudice</legend>
+          <DsfrInput
+            v-model="store.formData.prejudiceNombrePersonnes"
+            type="number"
+            label="Nombre de personnes mobilisées"
+          />
+          <DsfrInput
+            v-model="store.formData.prejudiceNombreHeures"
+            type="number"
+            label="Nombre d'heures"
+          />
+          <DsfrInput
+            v-model="store.formData.prejudiceNombreVehicules"
+            type="number"
+            label="Nombre de véhicules"
+          />
+          <DsfrInput
+            v-model="store.formData.prejudiceKilometrage"
+            type="number"
+            label="Kilométrage"
+          />
+          <DsfrInput
+            v-model="store.formData.prejudiceAutresCouts"
+            type="number"
+            label="Autres coûts"
+          />
+        </fieldset>
       </template>
 
       <div class="form-actions">
@@ -143,7 +133,7 @@ const handleSubmit = () => {
           label="Précédent"
           icon="fr-icon-arrow-left-line"
           secondary
-          @click="$emit('previous')"
+          @click="handlePrevious"
         />
         <DsfrButton type="submit" label="Suivant" icon="fr-icon-arrow-right-line" icon-right />
       </div>

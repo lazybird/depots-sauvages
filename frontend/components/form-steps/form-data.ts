@@ -1,38 +1,9 @@
-export interface WasteReportForm {
-  // Step 1
-  commune: string
-  adresseDepot: string
-  auteurSignalement: string
-  date: string
-  heure: string
-  photos: File[]
-  natureTerrain: string
-  volumeDechets: string
-  typesDechets: string[]
-  typesDechetsAutre: string
-  precisionsDechets: string
-  hasPhotos: string
-  // Step 2
-  souhaitePorterPlainte: string
-  auteurIdentifie?: string
-  indicesDisponibles?: string[]
-  commentairesSupplementaires?: string
-  arreteMunicipalExiste: string
-  connaissezVousMontantPrejudice: string
-  montantPrejudice?: number
-  // Fields for prejudice estimation
-  nombrePersonnesMobilisees?: number
-  dureeInterventionHeures?: number
-  nombreVehicules?: number
-  kilometrage?: number
-  autresCouts?: number
-}
-
 export const STEPS = [
   'Information sur le dépôt de déchets',
   'Procédure et préjudice',
   'Et maintenant ?',
 ]
+
 export const volumeOptions = [
   { text: 'Sélectionner une option', value: '', disabled: true },
   { text: 'Moins de 1m³', value: 'moins1m3' },
@@ -59,18 +30,18 @@ export const natureTerrainOptions = [
   },
 ]
 
-export const typesDechetsList = [
+export const typesDepotOptions = [
   {
     label: 'Tuiles',
     value: 'tuiles',
-    id: 'dechets-tuiles',
-    name: 'types-dechets',
+    id: 'depot-tuiles',
+    name: 'types-depot',
   },
   {
     label: 'Carrelage',
     value: 'carrelage',
-    id: 'dechets-carrelage',
-    name: 'types-dechets',
+    id: 'depot-carrelage',
+    name: 'types-depot',
   },
   {
     label: 'Encombrants',
@@ -200,12 +171,11 @@ export const auteurOptions = [
   { text: 'Autre', value: 'autre' },
 ]
 
-export const getInitialFormData = (): WasteReportForm => ({
+export const getInitialFormData = () => ({
   commune: '',
-  adresseDepot: '',
-  auteurSignalement: '',
-  date: '',
-  heure: '',
+  localisationDepot: '',
+  dateConstat: '',
+  heureConstat: '',
   photos: [],
   natureTerrain: '',
   volumeDechets: '',
@@ -213,10 +183,8 @@ export const getInitialFormData = (): WasteReportForm => ({
   typesDechetsAutre: '',
   precisionsDechets: '',
   hasPhotos: 'non',
-
-  // Step 2
   souhaitePorterPlainte: '',
-  auteurIdentifie: '',
+  auteurIdentifie: false,
   indicesDisponibles: [],
   commentairesSupplementaires: '',
   arreteMunicipalExiste: '',

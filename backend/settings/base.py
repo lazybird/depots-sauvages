@@ -17,12 +17,16 @@ INSTALLED_APPS = [
     #
     # Third party apps
     "django_extensions",
+    "rest_framework",
+    "corsheaders",
     #
     # Project apps
     "backend.home",
+    "backend.signalements",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -53,6 +57,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "backend.wsgi.application"
 
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -82,5 +88,10 @@ STATICFILES_DIRS = [
     PROJECT_ROOT / "static",
 ]
 
-# Default primary key field type
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# DRF Settings
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+    ],
+}
