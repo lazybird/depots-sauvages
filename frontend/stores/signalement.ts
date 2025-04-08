@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { API_URLS, createResource } from '../services/api'
+import { API_URLS, createResource, updateResource } from '../services/api'
 import type { Signalement } from '../types/signalement'
 import { fromApiFormat, toApiFormat } from '../types/signalement'
 
@@ -52,8 +52,19 @@ export const useSignalementStore = defineStore('signalement', {
       if (this.currentStep === 2) {
         this.formData.generate_doc = true
       }
-      const data = await createResource(API_URLS.signalements, toApiFormat(this.formData))
-      return data
+
+      if (this.currentId) {
+        // Update existing signalement
+        return await updateResource(
+          `${API_URLS.signalements}${this.currentId}/`,
+          toApiFormat(this.formData)
+        )
+      } else {
+        // Create new signalement
+        const data = await createResource(API_URLS.signalements, toApiFormat(this.formData))
+        this.currentId = data.id // Store the ID for future updates
+        return data
+      }
     },
 
     async loadSignalement(id: number) {

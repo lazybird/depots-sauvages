@@ -26,9 +26,9 @@ export const API_URLS = {
   signalements: `${API_BASE_URL}/api/signalements/`,
 }
 
-export async function createResource(url: string, data: any) {
+async function makeRequest(url: string, method: 'POST' | 'PUT', data: any) {
   const response = await fetch(url, {
-    method: 'POST',
+    method,
     headers: {
       'Content-Type': 'application/json',
       'X-CSRFToken': getCSRFToken() || '',
@@ -44,3 +44,7 @@ export async function createResource(url: string, data: any) {
 
   return response.json()
 }
+
+export const createResource = (url: string, data: any) => makeRequest(url, 'POST', data)
+
+export const updateResource = (url: string, data: any) => makeRequest(url, 'PUT', data)
