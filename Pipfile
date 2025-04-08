@@ -14,6 +14,7 @@ django-extensions = "*"
 python-odt-template = "*"
 django-cors-headers = "*"
 django-downloadview = "*"
+jinja2 = "*"
 
 [dev-packages]
 black = "*"
