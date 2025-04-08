@@ -23,7 +23,7 @@ export const getInitialState = (): Signalement => ({
   indicesDisponibles: [],
   precisionsIndices: '',
   arreteMunicipalExiste: false,
-  prejudiceMontantConnu: false,
+  prejudiceMontantConnu: true,
   prejudiceMontant: 0,
   prejudiceNombrePersonnes: 0,
   prejudiceNombreHeures: 0,
