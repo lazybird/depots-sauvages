@@ -1,4 +1,5 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+// Get base URL from environment or use default
+export const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 // Helper to get CSRF token
 const getCSRFToken = (): string => {
@@ -23,7 +24,13 @@ const getCSRFToken = (): string => {
 }
 
 export const API_URLS = {
-  signalements: `${API_BASE_URL}/api/signalements/`,
+  signalements: `${BACKEND_URL}/api/signalements/`,
+}
+
+// Document URL builder
+export const getDocumentUrl = (id: number | null): string => {
+  if (!id) return '#'
+  return `${BACKEND_URL}/documents/signalements/${id}/`
 }
 
 async function makeRequest(url: string, method: 'POST' | 'PUT', data: any) {

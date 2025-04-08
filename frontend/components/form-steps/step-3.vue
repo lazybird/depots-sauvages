@@ -1,10 +1,33 @@
 <script setup lang="ts">
-defineEmits(['restart'])
+import { computed } from 'vue'
+import { getDocumentUrl } from '../../services/api'
+import { useSignalementStore } from '../../stores/signalement'
+
+const store = useSignalementStore()
+const emit = defineEmits(['restart'])
+
+// Create a computed property for the document URL
+const documentUrl = computed(() => getDocumentUrl(store.currentId))
+
+// Function to handle document download
+const downloadDocument = () => {
+  // Create an invisible anchor element
+  const a = document.createElement('a')
+  a.href = documentUrl.value
+  a.download = `signalement-${store.currentId}.odt`
+  a.target = '_blank'
+
+  // Append to body, click, and remove to trigger download
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+}
 </script>
 
 <template>
   <div class="confirmation-container">
     <DsfrAlert type="success" title="Merci pour votre signalement" />
+
     <div class="confirmation-content">
       <section class="confirmation-section">
         <p>
@@ -18,6 +41,19 @@ defineEmits(['restart'])
         </p>
       </section>
 
+      <section class="confirmation-section document-section">
+        <div class="document-header">
+          <span class="document-icon">📄</span>
+          <h3 class="document-title">Document disponible</h3>
+        </div>
+        <p>Le document récapitulatif de votre signalement est prêt, vous pouvez le télécharger:</p>
+
+        <button class="fr-btn download-button" @click="downloadDocument">
+          <span class="fr-icon-download-line" aria-hidden="true"></span>
+          Télécharger le document
+        </button>
+      </section>
+
       <section class="confirmation-section">
         <h3>📞 Demandez conseil à un enquêteur environnement</h3>
         <p>
@@ -28,8 +64,8 @@ defineEmits(['restart'])
             class="fr-link fr-icon-external-link-line fr-link--icon-right"
             target="_blank"
           >
-            ProtectEnvi sur Tchap</a
-          >
+            ProtectEnvi sur Tchap
+          </a>
         </p>
         <p>Nous nous engageons à vous répondre le plus rapidement possible.</p>
       </section>
@@ -43,8 +79,8 @@ defineEmits(['restart'])
             class="fr-link fr-icon-external-link-line fr-link--icon-right"
             target="_blank"
           >
-            sur le guide pas à pas</a
-          >
+            sur le guide pas à pas
+          </a>
           de la Région Île de France (ACDéchets).
         </p>
       </section>
@@ -58,18 +94,18 @@ defineEmits(['restart'])
             class="fr-link fr-icon-external-link-line fr-link--icon-right"
             target="_blank"
           >
-            Gend'Elu</a
-          >
+            Gend'Elu
+          </a>
         </p>
       </section>
 
-      <DsfrButton
-        type="button"
-        label="Faire un nouveau signalement"
-        icon="fr-icon-arrow-right-line"
-        icon-right
-        @click="$emit('restart')"
-      />
+      <!-- Restart button with updated styling -->
+      <div class="action-buttons">
+        <button class="fr-btn restart-button" @click="$emit('restart')">
+          Faire un nouveau signalement
+          <span class="fr-icon-arrow-right-line" aria-hidden="true"></span>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -77,16 +113,7 @@ defineEmits(['restart'])
 <style scoped>
 .confirmation-container {
   max-width: 800px;
-}
-
-.form-wrapper {
-  padding: 0 1rem;
-}
-
-.success-title {
-  color: var(--text-default-success);
-  font-size: 1.75rem;
-  margin-bottom: 2rem;
+  margin: 0 auto;
 }
 
 .confirmation-content {
@@ -94,6 +121,7 @@ defineEmits(['restart'])
   padding: 2rem;
   border-radius: 8px;
   text-align: left;
+  margin-top: 1.5rem;
 }
 
 .confirmation-section {
@@ -103,9 +131,34 @@ defineEmits(['restart'])
 }
 
 .confirmation-section:last-of-type {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   padding-bottom: 0;
   border: none;
+}
+
+.document-section {
+  background-color: #f5f5fe; /* Light blue background */
+  padding: 1.5rem;
+  border-radius: 4px;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid #e3e3fd;
+}
+
+.document-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.document-icon {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+.document-title {
+  margin: 0;
+  color: #000091; /* DSFR blue */
 }
 
 h3 {
@@ -119,15 +172,44 @@ p {
   margin: 0.5rem 0;
 }
 
+.download-button {
+  background-color: #000091; /* DSFR blue */
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
+.download-button .fr-icon-download-line {
+  margin-right: 0.5rem;
+}
+
+.action-buttons {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.restart-button {
+  background-color: #000091; /* DSFR blue */
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.restart-button .fr-icon-arrow-right-line {
+  margin-left: 0.5rem;
+}
+
 @media (max-width: 768px) {
   .confirmation-container {
     padding: 0 0.5rem;
   }
-
-  .success-title {
-    font-size: 1.5rem;
-  }
-
   .confirmation-content {
     padding: 1.5rem;
   }
