@@ -10,4 +10,4 @@ class SignalementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Signalement
-        fields = "__all__"
+        exclude = ["document"]
