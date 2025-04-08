@@ -13,6 +13,7 @@ psycopg2-binary = "*"
 django-extensions = "*"
 python-odt-template = "*"
 django-cors-headers = "*"
+django-downloadview = "*"
 
 [dev-packages]
 black = "*"
