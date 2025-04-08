@@ -1,8 +1,10 @@
+import io
 import logging
 from pathlib import Path
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.forms.models import model_to_dict
 from django.utils import timezone
 
 from backend.doc_maker import settings as doc_maker_settings
@@ -17,18 +19,11 @@ def generate_document(sender, instance, created, **kwargs):
     """
     Generate document when generate_doc flag is True
     """
-    if instance.generate_doc and not instance.document:
+    if instance.generate_doc:
         try:
-            # Log paths to debug
-            template_path = Path(doc_maker_settings.TEMPLATE_DIR) / "template.odt"
-            logger.info(f"Looking for template at: {template_path}")
-            if not template_path.exists():
-                raise FileNotFoundError(f"Template not found at {template_path}")
-
-            # Create simple context
-            context = {"commune": instance.commune}
-            logger.info(f"Generating document with context: {context}")
-
+            # Get all model fields as a dictionary
+            context = model_to_dict(instance)
+            logger.info(f"Generating document for signalement {instance.id}")
             # Generate document
             processor = ODTProcessor()
             output_path = processor.process_template(
@@ -36,19 +31,17 @@ def generate_document(sender, instance, created, **kwargs):
                 context,
                 f"signalement_{instance.id}.odt",
             )
-            logger.info(f"Document generated at: {output_path}")
-
-            # Read generated file and store in DB
+            # Store in DB
             with open(output_path, "rb") as f:
-                instance.document = f.read()
-                instance.document_generated_at = timezone.now()
-                # Prevent infinite loop by turning off signal
+                document_data = f.read()
+                # Prevent infinite loop
                 post_save.disconnect(generate_document, sender=Signalement)
                 try:
+                    instance.document = document_data
+                    instance.document_generated_at = timezone.now()
                     instance.save()
+                    logger.info("Document saved for signalement " f"{instance.id}")
                 finally:
-                    # Ensure signal is reconnected even if save fails
                     post_save.connect(generate_document, sender=Signalement)
-
         except Exception as e:
-            logger.error(f"Document generation failed: {str(e)}", exc_info=True)
+            logger.error(f"Error generating document: {e}", exc_info=True)
