@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import '@/assets/styles/form-steps.css'
-import { useSignalementStore } from '@/stores/signalement'
+import { useSignalementStore } from '../../stores/signalement'
 import { indicesDisponiblesOptions, yesNoOptions } from './form-data'
 
 const store = useSignalementStore()
@@ -71,7 +71,8 @@ const handlePrevious = () => store.updateStep(1)
       <hr />
 
       <DsfrRadioButtonSet
-        v-model="store.formData.arreteMunicipalExiste"
+        :model-value="store.formData.arreteMunicipalExiste ? 'oui' : 'non'"
+        @update:model-value="store.updateBooleanField('arreteMunicipalExiste', $event)"
         name="arrete-municipal"
         legend="Disposez-vous d'un arrêté ou d'une délibération municipale encadrant ce type d'infraction et fixant le montant d'un forfait d'enlévement ?"
         :options="yesNoOptions"
