@@ -3,43 +3,54 @@ import { API_URLS, createResource, updateResource } from '../services/api'
 import type { Signalement } from '../types/signalement'
 import { fromApiFormat, toApiFormat } from '../types/signalement'
 
+// Create a single source of truth for initial state
+export const getInitialState = (): Signalement => ({
+  // Step 1
+  commune: '',
+  localisationDepot: '',
+  dateConstat: '',
+  heureConstat: '',
+  auteurSignalement: '',
+  natureTerrain: '',
+  volumeDepot: '',
+  typesDepot: [],
+  precisionsDepot: '',
+  photoDispo: false,
+
+  // Step 2
+  auteurIdentifie: false,
+  souhaitePorterPlainte: false,
+  indicesDisponibles: [],
+  precisionsIndices: '',
+  arreteMunicipalExiste: false,
+  prejudiceMontantConnu: false,
+  prejudiceMontant: 0,
+  prejudiceNombrePersonnes: 0,
+  prejudiceNombreHeures: 0,
+  prejudiceNombreVehicules: 0,
+  prejudiceKilometrage: 0,
+  prejudiceAutresCouts: 0,
+
+  // Management field
+  generate_doc: false,
+})
+
 export const useSignalementStore = defineStore('signalement', {
   state: () => ({
     currentStep: 1,
     currentId: null as number | null,
-    formData: {
-      // Step 1
-      commune: '',
-      localisationDepot: '',
-      dateConstat: '',
-      heureConstat: '',
-      auteurSignalement: '',
-      natureTerrain: '',
-      volumeDepot: '',
-      typesDepot: [],
-      precisionsDepot: '',
-      photoDispo: false,
-
-      // Step 2
-      auteurIdentifie: false,
-      souhaitePorterPlainte: false,
-      indicesDisponibles: [],
-      precisionsIndices: '',
-      arreteMunicipalExiste: false,
-      prejudiceMontantConnu: false,
-      prejudiceMontant: 0,
-      prejudiceNombrePersonnes: 0,
-      prejudiceNombreHeures: 0,
-      prejudiceNombreVehicules: 0,
-      prejudiceKilometrage: 0,
-      prejudiceAutresCouts: 0,
-      generate_doc: false,
-    } as Signalement,
+    formData: getInitialState(),
   }),
 
   actions: {
     updateStep(step: number) {
       this.currentStep = step
+    },
+
+    resetStore() {
+      this.currentStep = 1
+      this.currentId = null
+      this.formData = getInitialState()
     },
 
     updateBooleanField(field: keyof Signalement, value: string) {
@@ -54,15 +65,13 @@ export const useSignalementStore = defineStore('signalement', {
       }
 
       if (this.currentId) {
-        // Update existing signalement
         return await updateResource(
           `${API_URLS.signalements}${this.currentId}/`,
           toApiFormat(this.formData)
         )
       } else {
-        // Create new signalement
         const data = await createResource(API_URLS.signalements, toApiFormat(this.formData))
-        this.currentId = data.id // Store the ID for future updates
+        this.currentId = data.id
         return data
       }
     },
