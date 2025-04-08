@@ -28,24 +28,14 @@ class Signalement(models.Model):
     prejudice_nombre_vehicules = models.IntegerField("véhicules", null=True, blank=True)
     prejudice_kilometrage = models.IntegerField("kilométrage", null=True, blank=True)
     prejudice_autres_couts = models.IntegerField("autres coûts", null=True, blank=True)
-    document = models.BinaryField(
-        "Document généré",
-        null=True,
-        blank=True,
-        editable=False,
-    )
+    document = models.BinaryField("Document généré", null=True, blank=True)
     # Management fields
     generate_doc = models.BooleanField(
         "Générer le document",
         default=False,
         help_text="Flag indicating if document should be generated",
     )
-    document_generated_at = models.DateTimeField(
-        "Date de génération",
-        null=True,
-        blank=True,
-        editable=False,
-    )
+    document_generated_at = models.DateTimeField("Date de génération", null=True, blank=True)
 
     class Meta:
         verbose_name = "signalement"
